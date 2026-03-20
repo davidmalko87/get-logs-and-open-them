@@ -1,0 +1,5 @@
+# Exported log files
+*.txt
+
+# PowerShell transcripts
+*-transcript.log
