@@ -23,7 +23,8 @@
     Retrieves logs after January 1 2024 and saves them to C:\Logs.
 
 .NOTES
-    Requires Windows PowerShell 5.1 or later.
+    Version:  1.0.1
+    Requires: Windows PowerShell 5.1 or later.
     The Get-EventLog cmdlet requires appropriate permissions to read event logs.
 #>
 
