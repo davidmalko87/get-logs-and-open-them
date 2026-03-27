@@ -1,0 +1,70 @@
+name: Bug Report
+description: Report a problem with windows-eventlog-exporter
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug. Please fill in as much detail as possible.
+
+  - type: input
+    id: script-version
+    attributes:
+      label: Script version
+      description: The version shown in the `.NOTES` block of `script.ps1`
+      placeholder: "e.g. 1.0.1"
+    validations:
+      required: true
+
+  - type: input
+    id: ps-version
+    attributes:
+      label: PowerShell version
+      description: Output of `$PSVersionTable.PSVersion`
+      placeholder: "e.g. 5.1.19041.4648"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: Windows version (output of `[System.Environment]::OSVersion.VersionString`)
+      placeholder: "e.g. Microsoft Windows NT 10.0.22631.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands you ran, including any parameters
+      placeholder: |
+        1. Open PowerShell as Administrator
+        2. Run `.\script.ps1 -After "2024-01-01"`
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What actually happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: log-output
+    attributes:
+      label: Console / log output
+      description: Paste any error messages or console output here
+      render: text

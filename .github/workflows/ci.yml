@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint:
+    name: PSScriptAnalyzer (${{ matrix.label }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            shell: powershell
+            label: "Windows / PowerShell 5.1"
+          - os: windows-latest
+            shell: pwsh
+            label: "Windows / PowerShell 7"
+          - os: ubuntu-latest
+            shell: pwsh
+            label: "Linux / PowerShell 7"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: ${{ matrix.shell }}
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Lint (all severities — informational)
+        shell: ${{ matrix.shell }}
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path ./script.ps1 -Recurse
+          if ($results.Count -gt 0) {
+            $results | Format-Table -AutoSize
+          } else {
+            Write-Host "No issues found."
+          }
+
+      - name: Lint (errors only — fails build)
+        shell: ${{ matrix.shell }}
+        run: |
+          $errors = Invoke-ScriptAnalyzer -Path ./script.ps1 -Recurse -Severity Error
+          if ($errors.Count -gt 0) {
+            $errors | Format-Table -AutoSize
+            Write-Error "PSScriptAnalyzer found $($errors.Count) error(s). Fix them before merging."
+            exit 1
+          }
+          Write-Host "PSScriptAnalyzer: no errors found."
+
+      - name: Verify script syntax
+        shell: ${{ matrix.shell }}
+        run: |
+          $null = [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path ./script.ps1).Path,
+            [ref]$null,
+            [ref]$null
+          )
+          Write-Host "Syntax check passed."

@@ -1,32 +1,56 @@
 # windows-eventlog-exporter
 
-> PowerShell tool that exports Windows Event Log errors and warnings to text files and opens them instantly for review.
+[![CI](https://github.com/davidmalko87/windows-eventlog-exporter/actions/workflows/ci.yml/badge.svg)](https://github.com/davidmalko87/windows-eventlog-exporter/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-1.0.1-blue)](CHANGELOG.md)
+[![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)](https://learn.microsoft.com/en-us/powershell/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows-0078D6?logo=windows&logoColor=white)](https://www.microsoft.com/windows)
+[![Last Commit](https://img.shields.io/github/last-commit/davidmalko87/windows-eventlog-exporter)](https://github.com/davidmalko87/windows-eventlog-exporter/commits/main)
+[![Open Issues](https://img.shields.io/github/issues/davidmalko87/windows-eventlog-exporter)](https://github.com/davidmalko87/windows-eventlog-exporter/issues)
 
-![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue?logo=powershell)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Platform](https://img.shields.io/badge/platform-Windows-lightgrey?logo=windows)
+> A PowerShell script that exports Windows Event Log errors and warnings to text files and opens them instantly for review.
 
-## What It Does
+---
 
-Queries the **System** and **Application** Windows Event Logs for `Error` and `Warning` entries after a configurable date, saves each log to a separate text file, and opens them automatically for review — no manual navigation required.
+## Why?
+
+Digging through Windows Event Viewer by hand is slow and repetitive. This script queries both the **System** and **Application** event logs in one command, saves the results to plain-text files, and opens them automatically — turning a multi-minute manual process into a single command.
+
+---
 
 ## Features
 
-- Queries both System and Application event logs in one run
-- Filters entries by a configurable start date
-- Exports results to separate `.txt` files per log source
-- Opens each file automatically after export
-- Creates the output directory if it doesn't exist
-- No external dependencies — pure PowerShell
+| Feature | Description |
+|---|---|
+| Dual-log export | Queries both System and Application event logs in a single run |
+| Severity filter | Captures only `Error` and `Warning` entries — no noise |
+| Date filter | Configurable `-After` parameter keeps results focused on a time window |
+| Auto-open | Exported files open automatically for immediate review |
+| Auto-create output dir | Creates the output directory if it does not already exist |
+| Zero dependencies | Pure Windows PowerShell — no modules to install |
+| Colored console output | Blue / green / yellow status messages for at-a-glance progress |
 
-## Requirements
+---
+
+## Quick Start
+
+### 1. Prerequisites
 
 - Windows with PowerShell 5.1 or later
-- Sufficient permissions to read Windows Event Logs (run as Administrator if needed)
+- Permission to read Windows Event Logs (run as Administrator if needed)
 
-## Usage
+### 2. Download
 
-**Default** — exports events after `2022-01-12` to your Downloads folder:
+```powershell
+git clone https://github.com/davidmalko87/windows-eventlog-exporter.git
+cd windows-eventlog-exporter
+```
+
+Or download `script.ps1` directly.
+
+### 3. Run
+
+**Default** — exports events after `2022-01-12` to `%USERPROFILE%\Downloads`:
 
 ```powershell
 .\script.ps1
@@ -38,26 +62,61 @@ Queries the **System** and **Application** Windows Event Logs for `Error` and `W
 .\script.ps1 -After "2024-01-01" -OutputPath "C:\Logs"
 ```
 
-## Parameters
+---
+
+## Configuration reference
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `-After` | datetime | `2022-01-12` | Start date for log retrieval |
-| `-OutputPath` | string | `%USERPROFILE%\Downloads` | Directory where result files are saved |
+| `-After` | `datetime` | `2022-01-12` | Start date — only entries on or after this date are returned |
+| `-OutputPath` | `string` | `%USERPROFILE%\Downloads` | Directory where the two output files are saved |
 
-## Output Files
+---
+
+## Output files
 
 | File | Contents |
 |---|---|
-| `system-log.txt` | System Event Log errors and warnings |
-| `application-log.txt` | Application Event Log errors and warnings |
+| `system-log.txt` | System Event Log — errors and warnings |
+| `application-log.txt` | Application Event Log — errors and warnings |
 
-## Notes
+---
 
-- The script pauses for 5 seconds before exiting so you can review console output
-- If the output directory does not exist, it is created automatically
-- Run as Administrator to ensure full access to all event log entries
+## Project structure
+
+```
+windows-eventlog-exporter/
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.yml
+│   │   └── feature_request.yml
+│   ├── workflows/
+│   │   └── ci.yml
+│   └── PULL_REQUEST_TEMPLATE.md
+├── script.ps1          # Main script
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── README.md
+```
+
+---
+
+## Known limitations
+
+- `Get-EventLog` is deprecated in PowerShell 7+ but continues to work on Windows via the compatibility shim. It is not available on Linux or macOS.
+- `Invoke-Item` opens files with the system default viewer and requires an interactive GUI session. Running in a headless or SSH-only environment will produce a warning.
+- The default `-After` date (`2022-01-12`) may return a large number of entries on systems with old logs. Use a more recent date to narrow results.
+
+---
 
 ## License
 
 [MIT](LICENSE) © 2026 David Malko
+
+---
+
+## Contributing & changelog
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — versioning policy, development workflow, code style
+- [CHANGELOG.md](CHANGELOG.md) — full release history
